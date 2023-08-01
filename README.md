@@ -1,2 +1,170 @@
-# vim-ale-hello-world
-A simple Hello World-style tutorial for a plugin for vim-ale
+# How to create a vim-ale plugin
+
+A simple, Hello World-style tutorial for how to create a `vim-ale` plugin, including formatter, linter, and/or LSP server (Language Server Protocol).
+
+In this tutorial / example project we have:
+
+| `hellolang`  | A fictional language for this example         |
+| ------------ | --------------------------------------------- |
+| `hello-fmt`  | The formatter; What `vim-ale` calls a "fixer" |
+| `hello-lint` | (TODO) The linter with LSP support            |
+
+# Table of Contents
+
+- [HelloLang Demo](#demo)
+- [Anatomy of a vim-ale plugin](#anatomy)
+- [A Short Intro to VimScript](#vimscript)
+
+# Demo
+
+1. Install `vim-ale-hello-world` to `~/.vim/pack/plugin/start/`
+   ```sh
+   git clone --depth=1 \
+       https://github.com/beyondcodebootcamp/vim-ale-hello-world.git \
+       ~/.vim/pack/plugins/start/vim-ale-hello-world
+   ```
+2. Update `~/.vimrc` to recognize `hellolang`
+
+   ```vim
+   let g:ale_fixers = {
+   \  'hellolang': ['hello-fmt'],
+   \}
+   let g:ale_fix_on_save = 1
+
+   let g:ale_linters = {
+   \  'hellolang': ['hello-lint'],
+   \}
+   let g:ale_lint_on_save = 1
+   ```
+
+3. Update your `PATH` to include `~/.vim/pack/plugins/start/vim-ale-hello-world/bin/`
+   ```sh
+   export PATH="$HOME/.vim/pack/plugins/start/vim-ale-hello-world/bin/:$PATH"
+   ```
+
+Now `*.hello.txt` is registered as `hellolang` which using `hello-fmt` as a _fixer_, `hello-lint` as a _linter_ (and for LSP), and `javascript` for _syntax highlighting_ (because custom syntax highlighting is outside the scope of this tutorial).
+
+You can try opening and saving (`:w`) a file to watch the magic happen:
+
+```sh
+vi ./foo.hello.txt
+```
+
+```vim
+:w
+```
+
+```text
+// Needs more Hello, World!
+```
+
+# Anatomy
+
+There are **TWO** possible configurations for a plugin:
+
+## Internal
+
+An internal plugin would be a pull request to `vim-ale`:
+
+```text
+~/
+├── bin/
+│   ├── hello-fmt
+│   └── hello-lint
+│
+└── .vim/
+    ├── pack/plugins/start/ale/
+    │   │
+    │   ├── ale_linters/hellolang/
+    │   │   └── hello_lint.vim
+    │   │
+    │   └── autoload/ale/
+    │       ├── fix/
+    │       │   └── registry.vim
+    │       └── fixers/
+    │           └── hello_fmt.vim
+    │
+    └── plugins/
+        └── hellolang.vim
+```
+
+## External
+
+The advantage of an external plugin is that you don't have to get your plugin into "core" in order for others to use it.
+
+THIS plugin is external (obviously `vim-ale` wouldn't want our demo language in core).
+
+```text
+~/
+├── bin/
+│   ├── hello-fmt
+│   └── hello-lint
+│
+└── .vim/
+    ├── pack/plugins/start/vim-ale-hello-world/
+    │   │
+    │   ├── ale_linters/hellolang/
+    │   │   └── hello_lint.vim
+    │   │
+    │   ├── autoload/hello_world/fixers/
+    │   │   └── hello_fmt.vim
+    │   │
+    │   └── plugin/
+    │       └── hello_world.vim
+    │
+    └── plugins/
+        └── hellolang.vim
+```
+
+# VimScript
+
+Here's the minimum you need to know about vimscript to create a plugin:
+
+- special directories
+  - autoload
+  - plugin
+- functions & paths
+- variables & scope
+
+## The `autoload` Directory
+
+The `autoload` directory will LAZY LOAD functions when they are called.
+
+## The `plugin` Directory
+
+Vim files in `plugin` will _always_ load as soon as `vim` starts.
+
+## Functions & Paths
+
+1. A function declaration looks like this:
+   ```vim
+   function! hello_world#fixers#hello_fmt#GetExecutable(buffer) abort
+     " ...
+   endfunction
+   ```
+   - `function` means _declare_ and `function!` means declare or _replace_
+   - The function name is `GetExecutable`.
+   - The function _path_ is `hello_world#fixers#hello_fmt`.
+   - File and function paths MUST use `_` (underscore) rather than `-` (hyphen)
+2. A function invocation looks like this:
+   ```vim
+   call hello_world#fixers#hello_fmt#GetExecutable(buffer)
+   ```
+3. If the function is not defined at the time it is called, _autoload_ will attempt to find it by translating its function path to a file path:
+
+   ```text
+   Function Path: hello_world#fixers#hello_fmt#GetExecutable
+
+   Plugin Root:  ~/.vim/pack/plugins/start/vim-ale-hello-world/
+
+   Fixer Path:   ./autoload/ale/fixers/hello_fmt.vim
+   ```
+
+## Variables & Scope
+
+There are some special scope prefixes. The prefixes allow you to reuse the same name in different scopes or contexts.
+
+- `a:foo` refers to a function argument (even if it was declared as 'foo')
+- `let g:foo = 'bar'` refers to a global variable (accessible everywhere)
+- `let l:foo = 'bar'` refers to a local variable (scoped to a function)
+- `function! s:foo()` declares the function local to the current script
