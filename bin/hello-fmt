@@ -1,0 +1,186 @@
+#!/bin/sh
+set -e
+set -u
+
+my_stdin=0
+
+fn_show_version() { (
+    echo "hello-fmt 1.0.0"
+); }
+
+fn_show_usage() { (
+    echo ""
+    echo "USAGE"
+    echo "    hello-fmt [opts] [filepath]"
+    echo ""
+    echo "ARGS"
+    echo "    fmt"
+    echo "        for compatibility with 'hello fmt'"
+    echo ""
+    echo "    [filepath]"
+    echo "        supply a file path or '-' (for stdin), or pipe to stdin"
+    echo "        note: --stdin-filepath may be necessary to read imports"
+    echo ""
+    echo "OPTIONS"
+    echo "    --help"
+    echo "        show this message"
+    echo ""
+    echo "    -w, --write"
+    echo "        write updates to the original file"
+    echo ""
+    echo "    -o, --out <filepath>"
+    echo "        write updates to this file"
+    echo ""
+    echo "    --stdin-filepath <filepath>"
+    echo "        give the filepath (for project context) when giving file via stdin"
+    echo ""
+    echo "EXAMPLES"
+    echo ""
+    echo "    hello-fmt -w ./foo.hello.txt"
+    echo ""
+    echo "    cat ./foo.hello.txt |"
+    echo "        hello-fmt --stdin-filepath ./foo.hello.txt"
+    echo ""
+    echo ""
+); }
+
+fn_debug() { (
+    echo "${@}" >> /tmp/vim-ale-hello-fmt.log
+); }
+
+fn_err() { (
+    echo >&2 "${@}"
+); }
+
+main() { (
+    my_in_path_arg=''
+    my_in_path_context=''
+    my_out_file=''
+    my_write=''
+
+    while test "$#" -gt 0; do
+        my_arg="${1}"
+        shift 1
+        # if test "${#}" -eq 0; then
+        #     break
+        # fi
+
+        fn_debug "my_arg: ${my_arg}"
+        case "${my_arg}" in
+            fmt) ;;
+
+            help | --help)
+                fn_show_usage
+                ;;
+
+            version | -V | --version)
+                fn_show_version
+                ;;
+
+            --stdin-filepath)
+                my_option="${1}"
+                fn_debug "my_option: ${my_option}"
+                shift 1
+                my_in_path_context="${my_option}"
+                ;;
+
+            -w | --write)
+                my_write="yes"
+                ;;
+            -o | --out)
+                my_option="${1}"
+                fn_debug "my_option: ${my_option}"
+                shift 1
+                my_out_file="${my_option}"
+                ;;
+
+            -*)
+                fn_err "unknown flag: ${my_arg}"
+                return 1
+                ;;
+
+            *)
+                if test -n "${my_in_path_arg}"; then
+                    fn_err "extra argument: ${my_arg}"
+                    return 1
+                fi
+                my_in_path_arg="${my_arg}"
+                ;;
+        esac
+    done
+    fn_debug "parsed arguments"
+
+    if test -t "${my_stdin}"; then
+        fn_debug "stdin is interactive"
+        if test -z "${my_in_path_arg}"; then
+            {
+                echo "missing argument: input file (ex: ./foo.hello.txt)"
+                echo ""
+                fn_show_usage
+            } >&2
+            return 1
+        fi
+
+        if ! test -r "${my_in_path_arg}"; then
+            if test "${my_in_path_arg}" != "-"; then
+                echo >&2 "file not readable: '${my_in_path_arg}'"
+                return 1
+            fi
+        fi
+    else
+        fn_debug "stdin is non-interactive (ex: pipe)"
+        my_in_path_arg="-"
+        if test -n "${my_write}"; then
+            echo >&2 "cannot write to stdin: use '-o <filename>', not '-w'"
+            return 1
+        fi
+    fi
+
+    if test -z "${my_in_path_context}"; then
+        my_in_path_context="${my_in_path_arg}"
+    fi
+
+    if test -z "${my_out_file}"; then
+        if test -n "${my_write}"; then
+            my_out_file="${my_in_path_context}"
+        fi
+    fi
+
+    # mkdir -p "$(dirname "${my_out_file}")"
+    # touch "${my_out_file}"
+
+    my_in_path="${my_in_path_arg}"
+    if test "${my_in_path_arg}" = "-"; then
+        # TODO why can't it read '-' as stdin when run from vim?
+        my_in_path="${my_in_path_context}"
+        fn_debug "file source: <stdin>"
+    fi
+    # fn_debug "file path: '${my_in_path_arg}' '${my_in_path_context}'"
+    fn_debug "file path: '${my_in_path_context}'"
+    my_contents="$(
+        cat "${my_in_path}"
+        # cat "${my_in_path_arg}"
+    )"
+
+    my_out_fd=1
+    if test -n "${my_out_file}"; then
+        exec 4> "${my_out_file}"
+        my_out_fd=4
+    fi
+    {
+        printf '%s\n// Needs more "Hello, World!"' "${my_contents}"
+    } >&"${my_out_fd}"
+
+    fn_debug "success"
+); }
+
+fn_debug ''
+fn_debug "$(date '+%F %H:%M:%S')"
+
+my_args="${*:-}"
+if test -z "${my_args}"; then
+    main
+else
+    fn_debug "all args: ${0} ${*}"
+    main "${@}"
+fi
