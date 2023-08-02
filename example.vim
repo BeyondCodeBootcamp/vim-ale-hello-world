@@ -2,12 +2,12 @@ let g:ale_fix_on_save = 1
 
 if exists('g:ale_fixers')
 
-    let g:ale_fixers['hellolang'] = ['hello-fmt']
+    let g:ale_fixers['hellolang'] = ['hellofmt']
 
 else
 
     let g:ale_fixers = {
-    \   'hellolang': ['hello-fmt'],
+    \   'hellolang': ['hellofmt'],
     \}
 
 endif
