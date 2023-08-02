@@ -1,0 +1,38 @@
+{
+  "name": "vim-ale-hello-world",
+  "version": "1.0.0",
+  "description": "A Hello World-style vim-ale plugin with lsp linter and fixer",
+  "main": "bin/hello-lint",
+  "bin": {
+    "hello-lint": "bin/hello-lint"
+  },
+  "dependencies": {
+    "vscode-jsonrpc": "^8.1.0",
+    "vscode-languageserver": "^8.1.0",
+    "vscode-languageserver-protocol": "^3.17.3",
+    "vscode-languageserver-textdocument": "^1.0.8",
+    "vscode-languageserver-types": "^3.17.3"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/BeyondCodeBootcamp/vim-ale-hello-world.git"
+  },
+  "keywords": [
+    "vim-ale",
+    "lsp",
+    "language-server",
+    "vim"
+  ],
+  "author": "AJ ONeal <aj@beyondcodebootcamp.com>",
+  "license": "MPL-2.0",
+  "bugs": {
+    "url": "https://github.com/BeyondCodeBootcamp/vim-ale-hello-world/issues"
+  },
+  "homepage": "https://github.com/BeyondCodeBootcamp/vim-ale-hello-world#readme",
+  "devDependencies": {
+    "@types/node": "^20.4.5"
+  }
+}
