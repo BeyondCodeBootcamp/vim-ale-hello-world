@@ -1,61 +1,82 @@
 #!/usr/bin/env node
 "use strict";
 
-const {
-  DiagnosticSeverity,
-  TextDocuments,
-  createConnection,
-} = require("vscode-languageserver");
+let Ls = require("vscode-languageserver");
+let LsDoc = require("vscode-languageserver-textdocument");
 
-const { TextDocument } = require("vscode-languageserver-textdocument");
+let connection = Ls.createConnection();
+let documents = new Ls.TextDocuments(LsDoc.TextDocument);
 
-const getBlacklisted = (text) => {
-  const blacklist = ["foo", "bar", "baz"];
-  const regex = new RegExp(`\\b(${blacklist.join("|")})\\b`, "gi");
-  const results = [];
-  let matches;
+function getDiagnostics(textDocument) {
+  let text = textDocument.getText();
 
-  while ((matches = regex.exec(text)) && results.length < 100) {
-    results.push({
-      value: matches[0],
-      index: matches.index,
+  let blacklist = ["foo", "bar", "baz"];
+  let blocklistRe = blacklist.join("|");
+  let regex = new RegExp(`\\b(${blocklistRe})\\b`, "gi");
+
+  let source = "Blacklister";
+  let severity = Ls.DiagnosticSeverity.Warning;
+  let diagnostics = [];
+  for (;;) {
+    let match = regex.exec(text);
+    if (!match) {
+      break;
+    }
+
+    let start = textDocument.positionAt(match.index);
+    let end = textDocument.positionAt(match.index + match[0].length);
+    let message = `${match[0]} is blacklisted.`;
+
+    diagnostics.push({
+      severity,
+      range: { start, end },
+      message,
+      source,
     });
   }
-  return results;
-};
 
-const blacklistToDiagnostic =
-  (textDocument) =>
-  ({ index, value }) => ({
-    severity: DiagnosticSeverity.Warning,
-    range: {
-      start: textDocument.positionAt(index),
-      end: textDocument.positionAt(index + value.length),
+  return diagnostics;
+}
+
+function initialize() {
+  let config = {
+    capabilities: {
+      textDocumentSync: documents.syncKind,
     },
-    message: `${value} is blacklisted.`,
-    source: "Blacklister",
-  });
+  };
 
-const getDiagnostics = (textDocument) =>
-  getBlacklisted(textDocument.getText()).map(
-    blacklistToDiagnostic(textDocument),
-  );
+  return config;
+}
 
-const connection = createConnection();
-const documents = new TextDocuments(TextDocument);
+function createHandler(ev) {
+  function handler(change) {
+    console.log(ev, change);
+    let diagnostics = getDiagnostics(change.document);
+    connection.sendDiagnostics({
+      uri: change.document.uri,
+      diagnostics: diagnostics,
+    });
+  }
 
-connection.onInitialize(() => ({
-  capabilities: {
-    textDocumentSync: documents.syncKind,
-  },
-}));
+  return handler;
+}
 
-documents.onDidChangeContent((change) => {
-  connection.sendDiagnostics({
-    uri: change.document.uri,
-    diagnostics: getDiagnostics(change.document),
-  });
-});
+let onOpen = createHandler("open");
+let onChange = createHandler("change");
+let onSave = createHandler("save");
+let beforeSave = createHandler("before:save");
+let onClose = createHandler("close");
 
+// vim-ale uses these
+connection.onInitialize(initialize);
+documents.onDidOpen(onOpen);
+documents.onDidChangeContent(onChange);
+
+// other editors may use these
+documents.onWillSave(beforeSave);
+documents.onDidSave(onSave);
+documents.onDidClose(onClose);
+
+// this has a lot under the hood
 documents.listen(connection);
 connection.listen();
