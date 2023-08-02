@@ -1,0 +1,15 @@
+{
+  "method": "textDocument/didChange",
+  "jsonrpc": "2.0",
+  "params": {
+    "contentChanges": [
+      {
+        "text": "We all need a little Foo, foo, and fu.\n\n// Needs more \"Hello, World!\"!!\n// Needs more \"Hello, World!\"!\n// Needs more \"Hello, World!\"\n// Needs more \"Hello, World!\"\n// Needs more \"Hello, World!\"\n"
+      }
+    ],
+    "textDocument": {
+      "uri": "file:///Users/aj/Projects/Root/vim-ale-hello-world/foo.hello.txt",
+      "version": 3
+    }
+  }
+}
