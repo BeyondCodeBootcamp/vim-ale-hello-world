@@ -1,6 +1,7 @@
 # How to create a vim-ale plugin
 
-A simple, Hello World-style tutorial for how to create a `vim-ale` plugin, including formatter, linter, and/or LSP server (Language Server Protocol).
+A simple, Hello World-style tutorial for how to create a `vim-ale` plugin,
+including formatter, linter, and/or LSP server (Language Server Protocol).
 
 In this tutorial / example project we have:
 
@@ -26,28 +27,34 @@ In this tutorial / example project we have:
 2. Update `~/.vimrc` to recognize `hellolang`
 
    ```vim
-   let g:ale_fixers = {
-   \  'hellolang': ['hello-fmt'],
-   \}
    let g:ale_fix_on_save = 1
-
-   let g:ale_linters = {
-   \  'hellolang': ['hello-lint'],
-   \}
    let g:ale_lint_on_save = 1
+
+   let g:ale_fixers = {
+   \  'hellolang': ['hellofmt'],
+   \}
+
+   " NOTE: generally you don't need manual linter config
+   " let g:ale_linters = {
+   " \  'hellolang': ['hellolint'],
+   " \}
    ```
 
-3. Update your `PATH` to include `~/.vim/pack/plugins/start/vim-ale-hello-world/bin/`
+3. Update your `PATH` to include
+   `~/.vim/pack/plugins/start/vim-ale-hello-world/bin/`
    ```sh
    export PATH="$HOME/.vim/pack/plugins/start/vim-ale-hello-world/bin/:$PATH"
    ```
 
-Now `*.hello.txt` is registered as `hellolang` which using `hello-fmt` as a _fixer_, `hello-lint` as a _linter_ (and for LSP), and `javascript` for _syntax highlighting_ (because custom syntax highlighting is outside the scope of this tutorial).
+Now `*.hello.txt` is registered as `hellolang` which using `hello-fmt` as a
+_fixer_, `hello-lint` as a _linter_ (and for LSP), and `javascript` for _syntax
+highlighting_ (because custom syntax highlighting is outside the scope of this
+tutorial).
 
 You can try opening and saving (`:w`) a file to watch the magic happen:
 
 ```sh
-vi ./foo.hello.txt
+vi ./example.hello.txt
 ```
 
 ```vim
@@ -90,9 +97,11 @@ An internal plugin would be a pull request to `vim-ale`:
 
 ## External
 
-The advantage of an external plugin is that you don't have to get your plugin into "core" in order for others to use it.
+The advantage of an external plugin is that you don't have to get your plugin
+into "core" in order for others to use it.
 
-THIS plugin is external (obviously `vim-ale` wouldn't want our demo language in core).
+THIS plugin is external (obviously `vim-ale` wouldn't want our demo language in
+core).
 
 ```text
 ~/
@@ -150,7 +159,8 @@ Vim files in `plugin` will _always_ load as soon as `vim` starts.
    ```vim
    call hello_world#fixers#hello_fmt#GetExecutable(buffer)
    ```
-3. If the function is not defined at the time it is called, _autoload_ will attempt to find it by translating its function path to a file path:
+3. If the function is not defined at the time it is called, _autoload_ will
+   attempt to find it by translating its function path to a file path:
 
    ```text
    Function Path: hello_world#fixers#hello_fmt#GetExecutable
@@ -162,7 +172,8 @@ Vim files in `plugin` will _always_ load as soon as `vim` starts.
 
 ## Variables & Scope
 
-There are some special scope prefixes. The prefixes allow you to reuse the same name in different scopes or contexts.
+There are some special scope prefixes. The prefixes allow you to reuse the same
+name in different scopes or contexts.
 
 - `a:foo` refers to a function argument (even if it was declared as 'foo')
 - `let g:foo = 'bar'` refers to a global variable (accessible everywhere)
