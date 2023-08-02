@@ -7,15 +7,8 @@ augroup FiletypeGroup
 augroup END
 
 call ale#fix#registry#Add(
-\  'hello-fmt',
+\  'hellofmt',
 \  'hello_world#fixers#hello_fmt#Fix',
 \  ['hellolang'],
 \  'Apply HelloLang format to a file.'
 \)
-
-" call ale#fix#registry#Add(
-" \  'hello-fmt',
-" \  'ale#fixers#hello_fmt#Fix',
-" \  ['hellolang'],
-" \  'Apply HelloLang format to a file.'
-" \)
