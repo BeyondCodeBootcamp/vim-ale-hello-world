@@ -3,12 +3,18 @@
 A simple, Hello World-style tutorial for how to create a `vim-ale` plugin,
 including formatter, linter, and/or LSP server (Language Server Protocol).
 
+```sh
+vi ./example.hello.txt
+```
+
+<img width="602" alt="vim-ale-hello-world in action" src="https://github.com/BeyondCodeBootcamp/vim-ale-hello-world/assets/122831/7e37a08b-d1c1-45a1-99b2-23b51daebe1c">
+
 In this tutorial / example project we have:
 
-| `hellolang`  | A fictional language for this example         |
-| ------------ | --------------------------------------------- |
-| `hello-fmt`  | The formatter; What `vim-ale` calls a "fixer" |
-| `hello-lint` | The linter with LSP support                   |
+| `hellolang`  | A fictional language for this example (`*.hello.txt`) |
+| ------------ | ----------------------------------------------------- |
+| `hello-fmt`  | The formatter; What `vim-ale` calls a "fixer"         |
+| `hello-lint` | The linter with LSP support                           |
 
 # Table of Contents
 
@@ -41,7 +47,16 @@ In this tutorial / example project we have:
    " \}
    ```
 
-3. Update your `PATH` to include
+3. Install [`node`](https://webinstall.dev/node) and the `hello-lint` Language
+   Server
+   ```sh
+   curl https://webi.sh/node | sh
+   ```
+   ```sh
+   pushd ~/.vim/pack/plugins/start/vim-ale-hello-world/
+   npm ci
+   ```
+4. Update your `PATH` to include `hello-fmt` and `hello-lint` at
    `~/.vim/pack/plugins/start/vim-ale-hello-world/bin/`
    ```sh
    export PATH="$HOME/.vim/pack/plugins/start/vim-ale-hello-world/bin/:$PATH"
@@ -72,7 +87,7 @@ There are **TWO** possible configurations for a plugin:
 
 ## Internal
 
-An internal plugin would be a pull request to `vim-ale`:
+An internal plugin is a **Pull Request** to `vim-ale`:
 
 ```text
 ~/
