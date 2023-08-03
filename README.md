@@ -8,13 +8,14 @@ In this tutorial / example project we have:
 | `hellolang`  | A fictional language for this example         |
 | ------------ | --------------------------------------------- |
 | `hello-fmt`  | The formatter; What `vim-ale` calls a "fixer" |
-| `hello-lint` | (TODO) The linter with LSP support            |
+| `hello-lint` | The linter with LSP support                   |
 
 # Table of Contents
 
 - [HelloLang Demo](#demo)
 - [Anatomy of a vim-ale plugin](#anatomy)
 - [A Short Intro to VimScript](#vimscript)
+- [The Language Server Protocol](#the-protocol)
 
 # Demo
 
@@ -179,3 +180,18 @@ name in different scopes or contexts.
 - `let g:foo = 'bar'` refers to a global variable (accessible everywhere)
 - `let l:foo = 'bar'` refers to a local variable (scoped to a function)
 - `function! s:foo()` declares the function local to the current script
+
+## The Protocol
+
+LSP Messages are HTTP-like and
+
+- Start with `Content-Type: <byte-length>`
+- Separated by `\r\n`
+- Contain a JSON body
+
+LSP has _tonnes_ of features, very few of which are needed by `vim-ale` for
+linting.
+
+### Examples
+
+See [./events/](./events/).
