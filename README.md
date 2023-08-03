@@ -22,6 +22,7 @@ In this tutorial / example project we have:
 - [Anatomy of a vim-ale plugin](#anatomy)
 - [A Short Intro to VimScript](#vimscript)
 - [The Language Server Protocol](#the-protocol)
+- [Debugging](#debugging)
 
 # Demo
 
@@ -210,3 +211,25 @@ linting.
 ### Examples
 
 See [./events/](./events/).
+
+## Debugging
+
+- `:messages`
+- `:ALEInfo`
+- `--log <logfile>`
+
+Many errors are silenced by default and not available in `:messages`.
+
+Often the last few lines of `:ALEInfo` will contain more helpful error messages
+and warnings.
+
+You can use `--log <logfile>` to view the output of `ch_log`, which can help in
+debugging a variety of problems.
+
+```sh
+vim --log ~/vim.log
+```
+
+```sh
+tail -f ~/vim.log
+```
