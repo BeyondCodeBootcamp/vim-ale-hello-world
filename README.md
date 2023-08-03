@@ -7,7 +7,7 @@ including formatter, linter, and/or LSP server (Language Server Protocol).
 vi ./example.hello.txt
 ```
 
-<img width="602" alt="vim-ale-hello-world in action" src="https://github.com/BeyondCodeBootcamp/vim-ale-hello-world/assets/122831/7e37a08b-d1c1-45a1-99b2-23b51daebe1c">
+<img width="602" alt="vim-ale-hello-world in action" src="https://github.com/BeyondCodeBootcamp/vim-ale-hello-world/assets/122831/844d9522-b2be-4642-8e14-6f848d5d2126">
 
 In this tutorial / example project we have:
 
